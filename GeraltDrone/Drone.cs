@@ -12,30 +12,55 @@ namespace GeraltDrone
 {
 	public class Drone : NPC
 	{
-		private readonly float r = 80f;
-		private float t;
-		private readonly float offsetY = 20f;
-		private readonly float offsetX = 5f;
-		private bool throwing;
-		private bool thrown;
-		private Monster target;
-		private BasicProjectile basicProjectile;
-		private int damage;
-		private readonly float projectileVelocity;
-		private readonly IModHelper helper;
+		/*********
+		** Fields
+		*********/
+		private readonly IModHelper Helper;
+		private float T;
+		private Monster Target;
+		private int Damage;
+		private readonly float ProjectileVelocity;
+		private BasicProjectile CannonBall;
+
+		/****
+        ** Constants
+        ****/
+		private const float R = 80f;
+		private const float OFFSET_X = 5f;
+		private const float OFFSET_Y = 20f;
+
+		/****
+        ** State
+        ****/
+		private bool Throwing;
+		private bool Thrown;
 
 		public Drone()
 		{
 		}
 
-		public Drone(int speed, int damage, float projectileVelocity, IModHelper helper)
-		: base(new AnimatedSprite("Sidekick/Drone", 1, 12, 12), Game1.player.Position, 1, "Drone")
+		public Drone(
+			int speed,
+			int damage,
+			float projectileVelocity,
+			IModHelper helper
+		) : base(
+			new AnimatedSprite(
+				"Sidekick/Drone",
+				1,
+				12,
+				12
+			),
+			Game1.player.Position,
+			1,
+			"Drone"
+		)
 		{
 			this.speed = speed;
 			this.hideShadow.Value = true;
-			this.damage = damage;
-			this.projectileVelocity = projectileVelocity;
-			this.helper = helper;
+			this.Damage = damage;
+			this.ProjectileVelocity = projectileVelocity;
+			this.Helper = helper;
 		}
 
 		public override bool CanSocialize => false;
@@ -51,27 +76,27 @@ namespace GeraltDrone
 
 		public override void update(GameTime time, GameLocation location)
 		{
-			float newX = Game1.player.position.X + offsetX + r * (float)Math.Cos(t * 2 * Math.PI);
-			float newY = Game1.player.position.Y - offsetY + r * (float)Math.Sin(t * 2 * Math.PI);
+			float newX = Game1.player.position.X + OFFSET_X + R * (float)Math.Cos(T * 2 * Math.PI);
+			float newY = Game1.player.position.Y - OFFSET_Y + R * (float)Math.Sin(T * 2 * Math.PI);
+
 			position.Set(new Vector2(newX, newY));
+			T = (T + (float)time.ElapsedGameTime.TotalMilliseconds / (1000 * speed)) % 1;
 
-			t = (t + (float)time.ElapsedGameTime.TotalMilliseconds / (1000 * speed)) % 1;
-
-			if (!throwing)
+			if (!this.Throwing)
 			{
 				foreach (var npc in Game1.currentLocation.getCharacters())
 				{
-					if (npc.IsMonster && npc.withinPlayerThreshold(3))
-					{
-						throwing = true;
-						target = (Monster)npc;
-						break;
-					}
+					if (!npc.IsMonster || !npc.withinPlayerThreshold(3)) continue;
+
+					this.Throwing = true;
+					this.Target = (Monster)npc;
+
+					break;
 				}
 			}
 
-			if (throwing && target.IsMonster)
-				ShootTheBastard(time, location, target);
+			if (this.Throwing && this.Target.IsMonster)
+				this.ShootTheMonster(time, location, this.Target);
 		}
 
 		public override void draw(SpriteBatch b)
@@ -79,16 +104,14 @@ namespace GeraltDrone
 			base.draw(b);
 		}
 
-		public virtual void ShootTheBastard(GameTime time, GameLocation location, Monster monster)
+		private void ShootTheMonster(GameTime time, GameLocation location, Monster monster)
 		{
-			if (!thrown)
+			if (!this.Thrown)
 			{
-				if (damage == -1)
-				{
-					damage = monster.Health;
-				}
+				if (this.Damage == -1)
+					this.Damage = monster.Health;
 
-				BasicProjectile.onCollisionBehavior collisionBehavior = new BasicProjectile.onCollisionBehavior(
+				var collisionBehavior = new BasicProjectile.onCollisionBehavior(
 					delegate (GameLocation loc, int x, int y, Character who)
 					{
 						Tool currentTool = null;
@@ -97,29 +120,50 @@ namespace GeraltDrone
 							currentTool = Game1.player.CurrentTool;
 
 						if (monster is Bug bug && bug.isArmoredBug)
-							helper.Reflection.GetField<NetBool>(bug, "isArmoredBug").SetValue(new NetBool(false));
+							this.Helper.Reflection
+								.GetField<NetBool>(bug, "isArmoredBug")
+								.SetValue(new NetBool(false));
 
 						if (monster is RockCrab rockCrab)
 						{
-							if (Game1.player.CurrentTool != null && Game1.player.CurrentTool is Tool && currentTool != null && Game1.player.CurrentTool is Pickaxe)
+							if (Game1.player.CurrentTool != null
+							    && Game1.player.CurrentTool is Tool
+							    && currentTool != null
+							    && Game1.player.CurrentTool is Pickaxe)
 								Game1.player.CurrentTool = new MeleeWeapon(4);
 
-							helper.Reflection.GetField<NetBool>(rockCrab, "shellGone").SetValue(new NetBool(true));
-							helper.Reflection.GetField<NetInt>(rockCrab, "shellHealth").SetValue(new NetInt(0));
+							this.Helper.Reflection
+								.GetField<NetBool>(rockCrab, "shellGone")
+								.SetValue(new NetBool(true));
+							this.Helper.Reflection
+								.GetField<NetInt>(rockCrab, "shellHealth")
+								.SetValue(new NetInt(0));
 						}
 
-						loc.damageMonster(monster.GetBoundingBox(), damage, damage + 1, true, !(who is Farmer) ? Game1.player : who as Farmer);
+						loc.damageMonster(
+							monster.GetBoundingBox(),
+							this.Damage,
+							this.Damage + 1,
+							true,
+							!(who is Farmer) ? Game1.player : who as Farmer
+						);
 
-						if (Game1.player.CurrentTool != null && Game1.player.CurrentTool is Tool && currentTool != null)
+						if (Game1.player.CurrentTool != null
+						    && Game1.player.CurrentTool is Tool
+						    && currentTool != null)
 							Game1.player.CurrentTool = currentTool;
 					}
 				);
+				var collisionSound = "hitEnemy";
+				Vector2 velocityTowardMonster = Utility
+					.getVelocityTowardPoint(
+						Position,
+						monster.Position,
+						this.ProjectileVelocity
+					);
 
-				string collisionSound = "hitEnemy";
-
-				Vector2 velocityTowardMonster = Utility.getVelocityTowardPoint(Position, monster.Position, projectileVelocity);
-				basicProjectile = new BasicProjectile(
-					damage,
+				this.CannonBall = new BasicProjectile(
+					this.Damage,
 					Projectile.shadowBall,
 					0,
 					0,
@@ -136,19 +180,20 @@ namespace GeraltDrone
 					spriteFromObjectSheet: false,
 					collisionBehavior: collisionBehavior
 				)
+
 				{
 					IgnoreLocationCollision = (Game1.currentLocation.currentEvent != null)
 				};
 
-				location.projectiles.Add(basicProjectile);
-				thrown = true;
+				location.projectiles.Add(this.CannonBall);
+				this.Thrown = true;
 			}
 
-			if (thrown && basicProjectile is BasicProjectile && basicProjectile.destroyMe)
+			if (this.Thrown && this.CannonBall is BasicProjectile && this.CannonBall.destroyMe)
 			{
-				throwing = false;
-				thrown = false;
-				basicProjectile = null;
+				this.Throwing = false;
+				this.Thrown = false;
+				this.CannonBall = null;
 			}
 		}
 	}

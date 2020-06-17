@@ -134,7 +134,7 @@ namespace GeraltDrone
 			if (Game1.currentLocation is DecoratableLocation)
 				return;
 
-			if (Game1.getCharacterFromName("Drone") is NPC == false)
+			if (Game1.getCharacterFromName("Drone") == null)
 				Game1.currentLocation.addCharacter(
 					new Drone(
 						this.Config.RotationSpeed,
