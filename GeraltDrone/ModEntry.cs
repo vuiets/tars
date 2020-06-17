@@ -29,8 +29,8 @@ namespace GeraltDrone
         public override void Entry(IModHelper helper)
         {
 	        // load config
+	        this.ModHelper = helper;
 			this.Config = this.LoadConfig();
-			this.ModHelper = helper;
 
 	        // hook up events
 			helper.Events.GameLoop.Saving += this.OnGameSaveCreated;
