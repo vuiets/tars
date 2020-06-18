@@ -29,8 +29,8 @@ namespace GeraltDrone
         public override void Entry(IModHelper helper)
         {
 	        // load config
+	        this.ModHelper = helper;
 			this.Config = this.LoadConfig();
-			this.ModHelper = helper;
 
 	        // hook up events
 			helper.Events.GameLoop.Saving += this.OnGameSaveCreated;
@@ -134,7 +134,7 @@ namespace GeraltDrone
 			if (Game1.currentLocation is DecoratableLocation)
 				return;
 
-			if (Game1.getCharacterFromName("Drone") is NPC == false)
+			if (Game1.getCharacterFromName("Drone") == null)
 				Game1.currentLocation.addCharacter(
 					new Drone(
 						this.Config.RotationSpeed,
