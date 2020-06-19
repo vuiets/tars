@@ -3,7 +3,7 @@
 
 TARs is fun weekend project. It was inspired by and is a open source fork of [@camcamcamcam/murderdrone](https://github.com/camcamcamcam/murderdrone).
 
-#### Use
+### Use
 Press `F8` to activate TARS. 
 
 The drone will hover around you and come to life in the mines. It will
@@ -12,7 +12,7 @@ The drone will hover around you and come to life in the mines. It will
 
 If you would not like the aide of TARS, press `F8` again to deactivate TARS.
 
-#### Configure
+### Configure
 The mod creates a `config.json` file in its mod folder the first time you run it. Open that file in a text editor to change what you'd like.Stardew
 
 **Available settings**
@@ -44,11 +44,11 @@ The mod creates a `config.json` file in its mod folder the first time you run it
 </tr>
 </table>
 
-#### Compatibility
+### Compatibility
 TARS is compatible with Stardew Valley 1.4+ on Linux/Mac/Windows single player.
 
-#### Thanks to
+### Thanks to
 Huge shout out to [@Pathoschild](https://github.com/Pathoschild) for [SMAPI](https://github.com/Pathoschild/SMAPI) and [StardewMods](https://github.com/Pathoschild/StardewMods)
 
-#### License
+### License
 MIT
