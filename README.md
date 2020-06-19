@@ -19,27 +19,28 @@ The mod creates a `config.json` file in its mod folder the first time you run it
 <table>
 <tr>
   <th>Setting</th>
+  <th>Default</th>
   <th>What it affects</th>
 </tr>
 <tr>
   <td><code>Active</code></td>
+  <td>true</td>  
   <td>
     State on game launch. You can press `F8` to toggle the state once the game starts.</br>
-    Default:<code>true</code>
   </td>
 </tr>
 <tr>
   <td><code>KeyboardShortcut</code></td>
+  <td>F8</td>  
   <td>
     The configured keyboard button.</br>
-    Default:<code>F8</code>
   </td>
 </tr>
 <tr>
   <td><code>Damage</code></td>
+  <td>-1</td>  
   <td>
     Damage done on monsters by your drone. <code>-1</code> results in a one-hit KO.</br>
-    Default:<code>-1</code>
   </td>
 </tr>
 </table>
