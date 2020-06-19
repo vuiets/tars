@@ -12,7 +12,7 @@ using Netcode;
 using StarObject = StardewValley.Object;
 using CollisionBehavior = StardewValley.Projectiles.BasicProjectile.onCollisionBehavior;
 
-namespace GeraltDrone
+namespace TarsDrone
 {
 	public class Drone : NPC
 	{

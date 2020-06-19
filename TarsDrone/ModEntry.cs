@@ -4,7 +4,7 @@ using StardewValley.Locations;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
-namespace GeraltDrone
+namespace TarsDrone
 {
 	/// <summary>The mod entry point.</summary>
 	public class ModEntry : Mod, IAssetLoader
