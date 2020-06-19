@@ -123,9 +123,7 @@ namespace GeraltDrone
 			{
 				foreach (KeyValuePair<Vector2, StarObject> pair in Game1.currentLocation.objects.Pairs)
 				{
-					// start by shooting and breaking stones; later breakable containers
-
-					// check if stone is in same tile as drone
+					// check drone is hovering over stone
 					if(
 						pair.Value?.name != STONE
 					   || this.getTileLocation() != pair.Value.TileLocation
@@ -139,77 +137,35 @@ namespace GeraltDrone
 
 				// shoot the object on the tile
 				if (this.Destroying && this.TileTarget.name == STONE)
-					this.ShootTheTileObject(time, location, this.TileTarget);
+					this.MineStone(time, location, this.TileTarget);
 			}
 		}
 
-		private void ShootTheTileObject(GameTime time, GameLocation location, StarObject tileObject)
+		private void MineStone(GameTime time, GameLocation location, StarObject tileObject)
 		{
 			if (!this.Destroyed)
 			{
 				if (this.HakiPower == -1)
 					this.HakiPower = tileObject.getHealth();
 
-				CollisionBehavior collisionBehavior = StoneCollisionBehaviour(tileObject);
-				Vector2 velocityTowardTile = Utility.getVelocityTowardPoint(
-					Position,
+				this.Monitor.Log($"Trying to break stone at {tileObject.TileLocation}", LogLevel.Info);
+				// collision checks and logic
+				Tool iridiumPickaxe = this.GetIridiumPickaxe();
+				this.UseToolOnTile(
+					iridiumPickaxe,
 					tileObject.TileLocation,
-					this.ProjectileVelocity
+					Game1.player,
+					location
 				);
 
-				this.CannonBall = this.GetCannonBall(
-					location,
-					velocityTowardTile,
-					collisionBehavior
-				);
+				// Approach #1: Doesn't work
+				//Tool iridiumPickaxe = this.GetIridiumPickaxe();
+				//tileObject.performToolAction(iridiumPickaxe, location);
 
-				location.projectiles.Add(this.CannonBall);
 				this.Destroyed = true;
 			}
 
 			this.ResetMiningProps();
-		}
-
-		private CollisionBehavior StoneCollisionBehaviour(StarObject tileObject)
-		{
-			return new CollisionBehavior(
-				delegate(GameLocation loc, int x, int y, Character who)
-				{
-					Tool currentTool = null;
-
-					if (Game1.player.CurrentTool != null && Game1.player.CurrentTool is Tool)
-						currentTool = Game1.player.CurrentTool;
-
-					this.Monitor.Log($"Trying to break stone at {tileObject.TileLocation}", LogLevel.Info);
-					// collision checks and logic
-					Tool iridiumPickaxe = this.GetIridiumPickaxe();
-					tileObject.performToolAction(iridiumPickaxe, loc);
-
-					// Approach #3: Hit the stone with the pickaxe once
-					//Tool pickaxe = new Pickaxe();
-					//this.UseToolOnTile(
-					//	pickaxe,
-					//	tileObject.TileLocation,
-					//	!(who is Farmer) ? Game1.player : who as Farmer,
-					//	loc
-					//);
-
-					// Approach #2: Perform tool action
-					//Tool pickaxe = new Pickaxe();
-					//loc.performToolAction(pickaxe, (int)tileObject.TileLocation.X, (int)tileObject.TileLocation.Y);
-
-					// Approach #1: Destroy the object
-					//loc.destroyObject(
-					//	tileObject.TileLocation,
-					//	!(who is Farmer) ? Game1.player : who as Farmer
-					//);
-
-					if (Game1.player.CurrentTool != null
-					    && Game1.player.CurrentTool is Tool
-					    && currentTool != null)
-						Game1.player.CurrentTool = currentTool;
-				}
-			);
 		}
 
 		private Tool GetIridiumPickaxe()
@@ -245,11 +201,10 @@ namespace GeraltDrone
 
 		private void ResetMiningProps()
 		{
-			if (this.Destroyed && this.CannonBall is BasicProjectile && this.CannonBall.destroyMe)
+			if (this.Destroyed)
 			{
 				this.Destroying = false;
 				this.Destroyed = false;
-				this.CannonBall = null;
 			}
 		}
 

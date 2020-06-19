@@ -1,7 +1,7 @@
 {
   "Name": "GeraltDrone",
   "Author": "Cliftos",
-  "Version": "0.2.5-beta",
+  "Version": "0.2.0-beta",
   "Description": "A drone that helps you mine on Stardew Valley",
   "UniqueID": "Cliftos.GeraltDrone",
   "EntryDll": "GeraltDrone.dll",
