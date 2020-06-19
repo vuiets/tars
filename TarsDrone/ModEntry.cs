@@ -50,7 +50,7 @@ namespace TarsDrone
 		public T Load<T>(IAssetInfo asset)
 		{
 			if (asset.AssetNameEquals("Sidekick/Drone"))
-				return this.ModHelper.Content.Load<T>("Assets/drone_sprite_robot.png", ContentSource.ModFolder);
+				return this.ModHelper.Content.Load<T>("Assets/cute_robot_sprite.png");
 
 			throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
 		}
