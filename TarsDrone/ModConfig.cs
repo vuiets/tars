@@ -1,6 +1,6 @@
 using System;
 
-namespace GeraltDrone
+namespace TarsDrone
 {
 	public class ModConfig
 	{

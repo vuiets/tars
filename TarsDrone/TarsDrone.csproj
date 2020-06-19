@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FE03ABAB-2206-42AF-A0C8-05498B186A22}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>GeraltDrone</RootNamespace>
-    <AssemblyName>GeraltDrone</AssemblyName>
+    <RootNamespace>TarsDrone</RootNamespace>
+    <AssemblyName>TarsDrone</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
