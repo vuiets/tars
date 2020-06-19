@@ -140,7 +140,8 @@ namespace GeraltDrone
 						this.Config.RotationSpeed,
 						this.Config.Damage,
 						(float)this.Config.ProjectileVelocity,
-						this.ModHelper
+						this.ModHelper,
+						this.Monitor
 					)
 				);
 			else
