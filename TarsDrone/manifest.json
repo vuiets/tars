@@ -1,7 +1,7 @@
 {
   "Name": "TarsDrone",
   "Author": "Cliftos",
-  "Version": "0.1.0-beta",
+  "Version": "0.1.1-beta",
   "Description": "A drone that helps you in the treacherous mines of Stardew Valley",
   "UniqueID": "Cliftos.TarsDrone",
   "EntryDll": "TarsDrone.dll",
