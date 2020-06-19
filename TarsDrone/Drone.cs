@@ -126,7 +126,7 @@ namespace TarsDrone
 					// check drone is hovering over stone
 					if(
 						pair.Value?.name != STONE
-					   || this.getTileLocation() != pair.Value.TileLocation
+					   || !this.IsWithinPlayerThreshold(pair.Value, location, 3)
 					) continue;
 
 					this.Destroying = true;
@@ -149,6 +149,7 @@ namespace TarsDrone
 					this.HakiPower = tileObject.getHealth();
 
 				this.Monitor.Log($"Trying to break stone at {tileObject.TileLocation}", LogLevel.Info);
+
 				// collision checks and logic
 				Tool iridiumPickaxe = this.GetIridiumPickaxe();
 				this.UseToolOnTile(
@@ -157,10 +158,6 @@ namespace TarsDrone
 					Game1.player,
 					location
 				);
-
-				// Approach #1: Doesn't work
-				//Tool iridiumPickaxe = this.GetIridiumPickaxe();
-				//tileObject.performToolAction(iridiumPickaxe, location);
 
 				this.Destroyed = true;
 			}
@@ -184,17 +181,23 @@ namespace TarsDrone
 		/// <param name="player">The current player.</param>
 		/// <param name="location">The current location.</param>
 		/// <returns>Returns <c>true</c> for convenience when implementing tools.</returns>
-		protected bool UseToolOnTile(Tool tool, Vector2 tile, Farmer player, GameLocation location)
+		private bool UseToolOnTile(Tool tool, Vector2 tile, Farmer player, GameLocation location)
 		{
 			// use tool on center of tile
 			player.lastClick = this.GetToolPixelPosition(tile);
-			tool.DoFunction(location, (int)player.lastClick.X, (int)player.lastClick.Y, 0, player);
+			tool.DoFunction(
+				location,
+				(int)player.lastClick.X,
+				(int)player.lastClick.Y,
+				0,
+				player
+			);
 			return true;
 		}
 
 		/// <summary>Get the pixel position relative to the top-left corner of the map at which to use a tool.</summary>
 		/// <param name="tile">The tile to affect.</param>
-		protected Vector2 GetToolPixelPosition(Vector2 tile)
+		private Vector2 GetToolPixelPosition(Vector2 tile)
 		{
 			return (tile * Game1.tileSize) + new Vector2(Game1.tileSize / 2f);
 		}
@@ -206,6 +209,19 @@ namespace TarsDrone
 				this.Destroying = false;
 				this.Destroyed = false;
 			}
+		}
+
+		private bool IsWithinPlayerThreshold(
+			StarObject tileObj,
+			GameLocation location,
+			int threshold
+		)
+		{
+			if (location != null && !location.farmers.Any())
+				return false;
+			Vector2 tileLocation1 = this.getTileLocation();
+			Vector2 tileLocation2 = tileObj.TileLocation;
+			return (double) Math.Abs(tileLocation2.X - tileLocation1.X) <= (double) threshold && (double) Math.Abs(tileLocation2.Y - tileLocation1.Y) <= (double) threshold;
 		}
 
 		private void ProtectPlayer(GameTime time, GameLocation location)
