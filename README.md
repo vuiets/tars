@@ -4,13 +4,13 @@
 TARs is fun weekend project. It was inspired by and is a open source fork of [@camcamcamcam/murderdrone](https://github.com/camcamcamcam/murderdrone).
 
 ### Use
-Press `F8` to activate TARS. 
+Press `F8` to activate TARS.
 
-The drone will hover around you and come to life in the mines. It will
+Your personal drone will always hover around you and come to life in the mines and sewers. Without instruction it will,
 - Destroy all monsters, even the invincible Armored Bugs
 - Break down stones it hovers over so you can collect items
 
-If you would not like the aide of TARS, press `F8` again to deactivate TARS.
+If you would not like the TARS as your aide, press `F8` again to deactivate TARS.
 
 ### Configure
 The mod creates a `config.json` file in its mod folder the first time you run it. Open that file in a text editor to change what you'd like.Stardew
@@ -24,21 +24,21 @@ The mod creates a `config.json` file in its mod folder the first time you run it
 </tr>
 <tr>
   <td><code>Active</code></td>
-  <td>true</td>  
+  <td><code>true</code></td>  
   <td>
     State on game launch. You can press `F8` to toggle the state once the game starts.</br>
   </td>
 </tr>
 <tr>
   <td><code>KeyboardShortcut</code></td>
-  <td>F8</td>  
+  <td><code>F8</code></td>  
   <td>
     The configured keyboard button.</br>
   </td>
 </tr>
 <tr>
   <td><code>Damage</code></td>
-  <td>-1</td>  
+  <td><code>-1</code></td>  
   <td>
     Damage done on monsters by your drone. <code>-1</code> results in a one-hit KO.</br>
   </td>
