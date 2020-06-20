@@ -33,7 +33,8 @@ namespace TarsDrone.Framework
 			// attach pods
 			this.Pods = new IPod[]
 			{
-				new MinePod(new MineConfig(), modHelper, monitor)
+				new MinePod(new MineConfig(), modHelper, monitor),
+				new BattlePod(new BattleConfig(), modHelper, monitor),
 			};
 		}
 
@@ -41,13 +42,38 @@ namespace TarsDrone.Framework
 		{
 			// get context
 			Farmer buddy = Game1.player;
-			GameLocation presentLocation = Game1.currentLocation;
+//			GameLocation presentLocation = Game1.currentLocation;
 			Tool tool = buddy.CurrentTool;
 			Item item = buddy.CurrentItem;
 
 			// check stamina
 			// if stamina is okay, mine
-			foreach (KeyValuePair<Vector2, StarObject> pair in presentLocation.objects.Pairs)
+			this.Mine(
+				buddy,
+				tool,
+				item,
+				location
+			);
+
+			// then kill monsters
+			this.Shoot(
+				buddy,
+				tool,
+				item,
+				location
+			);
+
+			// else ask buddy to eat
+		}
+
+		private void Mine(
+			Farmer buddy,
+			Tool tool,
+			Item item,
+			GameLocation location
+		)
+		{
+			foreach (KeyValuePair<Vector2, StarObject> pair in location.objects.Pairs)
 			{
 				bool mined = false;
 
@@ -59,7 +85,7 @@ namespace TarsDrone.Framework
 							buddy,
 							tool,
 							item,
-							presentLocation
+							location
 						);
 
 					if(mined)
@@ -69,9 +95,37 @@ namespace TarsDrone.Framework
 				if(mined)
 					break;
 			}
-			// then kill monsters
+		}
 
-			// else ask buddy to eat
+		private void Shoot(
+			Farmer buddy,
+			Tool tool,
+			Item item,
+			GameLocation location
+		)
+		{
+			foreach (var npc in location.getCharacters())
+			{
+				bool attacked = false;
+
+				foreach (IPod pod in this.Pods)
+				{
+					attacked = pod
+						.Interact(
+							npc,
+							buddy,
+							tool,
+							item,
+							location
+						);
+
+					if(attacked)
+						break;
+				}
+
+				if(attacked)
+					break;
+			}
 		}
 	}
 }
