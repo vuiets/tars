@@ -3,6 +3,7 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using TarsDrone.Framework;
 
 namespace TarsDrone
 {
@@ -137,9 +138,7 @@ namespace TarsDrone
 			if (Game1.getCharacterFromName("Drone") == null)
 				Game1.currentLocation.addCharacter(
 					new Drone(
-						this.Config.RotationSpeed,
-						this.Config.Damage,
-						(float)this.Config.ProjectileVelocity,
+						this.Config,
 						this.ModHelper,
 						this.Monitor
 					)
