@@ -4,6 +4,7 @@ using StardewValley.Locations;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using TarsDrone.Framework;
+using TarsDrone.Framework.Core;
 
 namespace TarsDrone
 {
@@ -21,6 +22,14 @@ namespace TarsDrone
 	    ****/
 		/// <summary>The mod configuration.</summary>
 		private ModConfig Config;
+
+		/****
+		** Constants
+		****/
+		private readonly string SPRITE_NAME = "Sidekick/Drone";
+		private readonly int SPRITE_PIXEL_WIDTH = 12;
+		private readonly int SPRITE_PIXEL_HEIGHT = 12;
+		private readonly string DRONE_NAME = "Drone";
 
 		/*********
         ** Public methods
@@ -85,7 +94,7 @@ namespace TarsDrone
 				true
 			))
 			{
-				if (Config.Active)
+				if (this.Config.Active)
 					this.DeactivateDrone();
 				else
 					this.ActivateDrone();
@@ -136,13 +145,8 @@ namespace TarsDrone
 				return;
 
 			if (Game1.getCharacterFromName("Drone") == null)
-				Game1.currentLocation.addCharacter(
-					new Drone(
-						this.Config,
-						this.ModHelper,
-						this.Monitor
-					)
-				);
+				Game1.currentLocation
+					.addCharacter(CreateDrone());
 			else
 				Game1.warpCharacter(
 					Game1.getCharacterFromName("Drone"),
@@ -155,6 +159,29 @@ namespace TarsDrone
 		{
 			if (Game1.getCharacterFromName("Drone") is NPC drone)
 				Game1.removeThisCharacterFromAllLocations(drone);
+		}
+
+		private Drone CreateDrone()
+		{
+			AnimatedSprite droneSprite = new AnimatedSprite(
+				this.SPRITE_NAME,
+				1,
+				this.SPRITE_PIXEL_WIDTH,
+				this.SPRITE_PIXEL_HEIGHT
+			);
+			NPCOptions droneOptions = new NPCOptions(
+				droneSprite,
+				Game1.player.Position,
+				1,
+				this.DRONE_NAME
+			);
+
+			return  new Drone(
+				this.Config,
+				this.Helper,
+				this.Monitor,
+				droneOptions
+			);
 		}
 	}
 }

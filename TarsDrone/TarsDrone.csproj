@@ -34,7 +34,6 @@
     <Compile Include="Framework\Core\BaseDrone.cs" />
     <Compile Include="Framework\Core\IDrone.cs" />
     <Compile Include="Framework\Drone.cs" />
-    <Compile Include="Framework\DroneManager.cs" />
     <Compile Include="Framework\Pods\Core\BasePod.cs" />
     <Compile Include="Framework\Pods\Core\IPod.cs" />
     <Compile Include="Framework\Pods\DefensePod.cs" />

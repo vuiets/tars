@@ -11,8 +11,9 @@ namespace TarsDrone.Framework
 		public Drone(
 			ModConfig config,
 			IModHelper modHelper,
-			IMonitor monitor)
-			: base(config, modHelper, monitor)
+			IMonitor monitor,
+			NPCOptions npcOptions)
+			: base(config, modHelper, monitor, npcOptions)
 		{
 			// do nothing
 		}

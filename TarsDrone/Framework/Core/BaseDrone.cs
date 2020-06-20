@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewModdingAPI;
 
@@ -36,6 +37,11 @@ namespace TarsDrone.Framework.Core
 			// do nothing
 		}
 
+		public override void draw(SpriteBatch b)
+		{
+			base.draw(b);
+		}
+
 		public override void update(GameTime time, GameLocation location)
 		{
 			// update drone's position
@@ -52,7 +58,23 @@ namespace TarsDrone.Framework.Core
 		/*********
 		** Protected Methods
 		*********/
-		protected BaseDrone(ModConfig config, IModHelper modHelper, IMonitor monitor)
+		protected BaseDrone()
+		{
+		}
+
+		// TODO: Fix the NPC instantiation logic
+		protected BaseDrone(
+			ModConfig config,
+			IModHelper modHelper,
+			IMonitor monitor,
+			NPCOptions npcOptions
+		)
+		: base(
+			npcOptions.Sprite,
+			npcOptions.Position,
+			npcOptions.FacingDirection,
+			npcOptions.Name
+		)
 		{
 			this.Config = config;
 			this.Helper = modHelper;
@@ -72,6 +94,27 @@ namespace TarsDrone.Framework.Core
 
 			this.position.Set(new Vector2(newX, newY));
 			this.T = (this.T + (float)time.ElapsedGameTime.TotalMilliseconds / (1000 * speed)) % 1;
+		}
+	}
+
+	internal sealed class NPCOptions
+	{
+		public AnimatedSprite Sprite { get; }
+		public int FacingDirection { get; }
+		public Vector2 Position { get; }
+		public string Name { get; }
+
+		public NPCOptions(
+			AnimatedSprite sprite,
+			Vector2 position,
+			int facingDirection,
+			string name
+		)
+		{
+			this.Sprite = sprite;
+			this.FacingDirection = facingDirection;
+			this.Position = position;
+			this.Name = name;
 		}
 	}
 }
