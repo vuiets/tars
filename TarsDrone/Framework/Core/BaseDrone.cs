@@ -62,7 +62,6 @@ namespace TarsDrone.Framework.Core
 		{
 		}
 
-		// TODO: Fix the NPC instantiation logic
 		protected BaseDrone(
 			ModConfig config,
 			IModHelper modHelper,

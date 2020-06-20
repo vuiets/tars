@@ -30,6 +30,8 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\Config\BattleConfig.cs" />
+    <Compile Include="Framework\Config\BuiltInPodConfig.cs" />
     <Compile Include="Framework\Config\MineConfig.cs" />
     <Compile Include="Framework\Core\BaseDrone.cs" />
     <Compile Include="Framework\Core\IDrone.cs" />
