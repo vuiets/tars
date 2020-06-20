@@ -1,6 +1,6 @@
 namespace TarsDrone.Framework.Config
 {
-	internal class MineConfig
+	public class MineConfig
 	{
 		/// <summary>Whether to break stones.</summary>
 		public bool BreakStones { get; set; } = true;

@@ -36,9 +36,9 @@
     <Compile Include="Framework\Core\BaseDrone.cs" />
     <Compile Include="Framework\Core\IDrone.cs" />
     <Compile Include="Framework\Drone.cs" />
+    <Compile Include="Framework\Pods\BattlePod.cs" />
     <Compile Include="Framework\Pods\Core\BasePod.cs" />
     <Compile Include="Framework\Pods\Core\IPod.cs" />
-    <Compile Include="Framework\Pods\DefensePod.cs" />
     <Compile Include="Framework\Pods\MinePod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModEntry.cs" />

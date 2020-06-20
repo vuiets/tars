@@ -1,10 +1,10 @@
-using Microsoft.Xna.Framework;
+using Netcode;
 using StardewValley;
-using StardewValley.TerrainFeatures;
-using StardewModdingAPI;
 using StardewValley.Objects;
-using TarsDrone.Framework.Pods.Core;
+using StardewValley.Tools;
+using StardewModdingAPI;
 using TarsDrone.Framework.Config;
+using TarsDrone.Framework.Pods.Core;
 using StarObject = StardewValley.Object;
 
 namespace TarsDrone.Framework.Pods
@@ -49,25 +49,21 @@ namespace TarsDrone.Framework.Pods
 		}
 
 		/// <summary>Act on the given tile.</summary>
-		/// <param name="tile">The tile to modify.</param>
 		/// <param name="tileObj">The object on the tile.</param>
-		/// <param name="tileFeature">The feature on the tile.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
-		/// <param name="tool">The tool selected by the player (if any).</param>
+		/// <param name="buddyTool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public override bool Act(
-			Vector2 tile,
 			StarObject tileObj,
-			TerrainFeature tileFeature,
 			Farmer buddy,
-			Tool tool,
+			Tool buddyTool,
 			Item item,
 			GameLocation location
 		)
 		{
 			// check if object is in proximity
-			if (this
+			if (!this
 				.IsTileObjWithinBuddyThreshold(
 					buddy,
 					tileObj,
@@ -75,33 +71,66 @@ namespace TarsDrone.Framework.Pods
 					3
 				)
 			)
+				return false;
+
+			// conjure an iridium pickaxe
+			Tool tool = this.GetIridiumPickaxe();
+
+			// break stones
+			if(this.Config.BreakStones && this.IsStone(tileObj))
+				return this.UseToolOnTile(
+					tool,
+					tileObj.TileLocation,
+					buddy,
+					location
+				);
+
+			// break mine containers, both boxes and barrels
+			if (this.Config.BreakMineContainers && this.IsBreakableMineContainer(tileObj))
 			{
-				// break stones
-				if(this.Config.BreakStones && this.IsStone(tileObj))
-					return this.UseToolOnTile(
-						tool,
-						tile,
-						buddy,
-						location
-					);
-
-				// break mine containers, both boxes and barrels
-				if (this.Config.BreakMineContainers && this.IsBreakableMineContainer(tileObj))
-				{
-					BreakableContainer container = (BreakableContainer) tileObj;
-					container.performToolAction(tool, location);
-				}
-
-				// clear weeds
-				if(this.Config.ClearWeeds && this.IsWeed(tileObj))
-					return this.UseToolOnTile(
-						tool,
-						tile,
-						buddy,
-						location
-					);
+				BreakableContainer container = (BreakableContainer) tileObj;
+				return container.performToolAction(tool, location);
 			}
+
+			// clear weeds
+			if(this.Config.ClearWeeds && this.IsWeed(tileObj))
+				return this.UseToolOnTile(
+					tool,
+					tileObj.TileLocation,
+					buddy,
+					location
+				);
+
 			return false;
+		}
+
+		/// <summary>Interact with a NPC.</summary>
+		/// <param name="npc">The npc in the vicinity.</param>
+		/// <param name="buddy">The current player who owns this drone.</param>
+		/// <param name="tool">The tool selected by the player (if any).</param>
+		/// <param name="item">The item selected by the player (if any).</param>
+		/// <param name="location">The current location.</param>
+		public override bool Interact(
+			NPC npc,
+			Farmer buddy,
+			Tool tool,
+			Item item,
+			GameLocation location
+		)
+		{
+			return false;
+		}
+
+		private Tool GetIridiumPickaxe()
+		{
+			Tool pickaxe = new Pickaxe();
+
+			// upgrade pickaxe to iridium
+			this.Helper.Reflection
+				.GetField<NetInt>(pickaxe, "upgradeLevel")
+				.SetValue(new NetInt(4));
+
+			return pickaxe;
 		}
 	}
 }

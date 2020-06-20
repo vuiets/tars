@@ -1,6 +1,6 @@
 namespace TarsDrone.Framework.Config
 {
-	internal class BuiltInPodConfig
+	public class BuiltInPodConfig
 	{
 		/// <summary>Configuration for the Battle pod.</summary>
 		public BattleConfig Battle { get; set; } = new BattleConfig();

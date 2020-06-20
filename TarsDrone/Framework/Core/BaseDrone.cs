@@ -15,8 +15,7 @@ namespace TarsDrone.Framework.Core
 		private readonly ModConfig Config;
 		private readonly IMonitor Monitor;
 		private float T;
-		private int Damage;
-		private readonly float ProjectileVelocity;
+		public float ProjectileVelocity { get; }
 
 		/****
 		* Constants
@@ -81,7 +80,6 @@ namespace TarsDrone.Framework.Core
 
 			// initialize drone properties
 			this.speed = this.Config.RotationSpeed;
-			this.Damage = this.Config.Damage;
 			this.ProjectileVelocity = this.Config.ProjectileVelocity;
 		}
 
@@ -96,6 +94,7 @@ namespace TarsDrone.Framework.Core
 		}
 	}
 
+	// TODO: find a place and name for NPCOptions
 	internal sealed class NPCOptions
 	{
 		public AnimatedSprite Sprite { get; }

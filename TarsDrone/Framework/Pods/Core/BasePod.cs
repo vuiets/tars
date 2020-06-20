@@ -2,8 +2,9 @@ using System;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
 using StardewModdingAPI;
+using StardewValley.Monsters;
+using StardewValley.Projectiles;
 using StarObject = StardewValley.Object;
 
 namespace TarsDrone.Framework.Pods.Core
@@ -14,7 +15,7 @@ namespace TarsDrone.Framework.Pods.Core
 		** Fields
 		*********/
 		/// <summary>Provides handy modding utilities.</summary>
-		protected IModHelper ModHelper { get; }
+		protected IModHelper Helper { get; }
 
 		/// <summary>Helps with logging.</summary>
 		protected IMonitor Monitor { get; }
@@ -41,17 +42,27 @@ namespace TarsDrone.Framework.Pods.Core
 		);
 
 		/// <summary>Apply the tool to the given tile.</summary>
-		/// <param name="tile">The tile to modify.</param>
 		/// <param name="tileObj">The object on the tile.</param>
-		/// <param name="tileFeature">The feature on the tile.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public abstract bool Act(
-			Vector2 tile,
 			StarObject tileObj,
-			TerrainFeature tileFeature,
+			Farmer buddy,
+			Tool tool,
+			Item item,
+			GameLocation location
+		);
+
+		/// <summary>Interact with a NPC.</summary>
+		/// <param name="npc">The npc in the vicinity.</param>
+		/// <param name="buddy">The current player who owns this drone.</param>
+		/// <param name="tool">The tool selected by the player (if any).</param>
+		/// <param name="item">The item selected by the player (if any).</param>
+		/// <param name="location">The current location.</param>
+		public abstract bool Interact(
+			NPC npc,
 			Farmer buddy,
 			Tool tool,
 			Item item,
@@ -95,7 +106,7 @@ namespace TarsDrone.Framework.Pods.Core
 		/// <param name="monitor">Helps with logging.</param>
 		protected BasePod(IModHelper modHelper, IMonitor monitor)
 		{
-			this.ModHelper = modHelper;
+			this.Helper = modHelper;
 			this.Monitor = monitor;
 		}
 
@@ -118,6 +129,13 @@ namespace TarsDrone.Framework.Pods.Core
 		protected bool IsWeed(StarObject tileObj)
 		{
 			return !(tileObj is Chest) && tileObj?.Name == WEEDS;
+		}
+
+		/// <summary>Get whether a npc is a monster.</summary>
+		/// <param name="npc">The non-player character in the world.</param>
+		protected bool IsMonster(NPC npc)
+		{
+			return npc.IsMonster;
 		}
 
 		/// <summary>Use a tool on a tile.</summary>
@@ -152,6 +170,17 @@ namespace TarsDrone.Framework.Pods.Core
 			return (tile * Game1.tileSize) + new Vector2(Game1.tileSize / 2f);
 		}
 
-		// TODO: Add a throw or shoot method like 'UseOnTile' to handle projectiles
+		/// <summary>Fire a projectile.</summary>
+		/// <param name="projectile">The self-propelling item with inherent collision behaviour.</param>
+		/// <param name="location">The current location.</param>
+		/// <returns>Returns <c>true</c> for convenience when implementing actions.</returns>
+		protected bool Beam(
+			BasicProjectile projectile,
+			GameLocation location
+		)
+		{
+			location.projectiles.Add(projectile);
+			return true;
+		}
 	}
 }
