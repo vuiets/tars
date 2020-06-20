@@ -49,18 +49,25 @@ namespace TarsDrone.Framework
 			// if stamina is okay, mine
 			foreach (KeyValuePair<Vector2, StarObject> pair in presentLocation.objects.Pairs)
 			{
+				bool mined = false;
+
 				foreach (IPod pod in this.Pods)
 				{
-					if(pod
+					mined = pod
 						.Act(
 							pair.Value,
 							buddy,
 							tool,
 							item,
 							presentLocation
-						)
-					) break;
+						);
+
+					if(mined)
+						break;
 				}
+
+				if(mined)
+					break;
 			}
 			// then kill monsters
 
