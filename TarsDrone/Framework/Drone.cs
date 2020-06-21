@@ -42,90 +42,92 @@ namespace TarsDrone.Framework
 		{
 			// get context
 			Farmer buddy = Game1.player;
-//			GameLocation presentLocation = Game1.currentLocation;
 			Tool tool = buddy.CurrentTool;
 			Item item = buddy.CurrentItem;
 
 			// check stamina
-			// if stamina is okay, mine
-			this.Mine(
-				buddy,
-				tool,
-				item,
-				location
-			);
+			// if stamina is okay activate all pods
+			foreach (IPod pod in this.Pods)
+			{
+				// okay now mine
+				pod
+					.Act(
+						buddy,
+						tool,
+						item,
+						location
+					);
 
-			// then kill monsters
-			this.Shoot(
-				buddy,
-				tool,
-				item,
-				location
-			);
-
+				// then attack monsters
+				pod
+					.Interact(
+						buddy,
+						tool,
+						item,
+						location
+					);
+			}
 			// else ask buddy to eat
 		}
 
-		private void Mine(
-			Farmer buddy,
-			Tool tool,
-			Item item,
-			GameLocation location
-		)
-		{
-			foreach (KeyValuePair<Vector2, StarObject> pair in location.objects.Pairs)
-			{
-				bool mined = false;
+		// private void Mine(
+		// 	Farmer buddy,
+		// 	Tool tool,
+		// 	Item item,
+		// 	GameLocation location
+		// )
+		// {
+		// 	foreach (KeyValuePair<Vector2, StarObject> pair in location.objects.Pairs)
+		// 	{
+		// 		bool mined = false;
+		//
+		// 		foreach (IPod pod in this.Pods)
+		// 		{
+		// 			mined = pod
+		// 				.Act(
+		// 					buddy,
+		// 					tool,
+		// 					item,
+		// 					location
+		// 				);
+		//
+		// 			if(mined)
+		// 				break;
+		// 		}
+		//
+		// 		if(mined)
+		// 			break;
+		// 	}
+		// }
 
-				foreach (IPod pod in this.Pods)
-				{
-					mined = pod
-						.Act(
-							pair.Value,
-							buddy,
-							tool,
-							item,
-							location
-						);
-
-					if(mined)
-						break;
-				}
-
-				if(mined)
-					break;
-			}
-		}
-
-		private void Shoot(
-			Farmer buddy,
-			Tool tool,
-			Item item,
-			GameLocation location
-		)
-		{
-			foreach (var npc in location.getCharacters())
-			{
-				bool attacked = false;
-
-				foreach (IPod pod in this.Pods)
-				{
-					attacked = pod
-						.Interact(
-							npc,
-							buddy,
-							tool,
-							item,
-							location
-						);
-
-					if(attacked)
-						break;
-				}
-
-				if(attacked)
-					break;
-			}
-		}
+		// private void Shoot(
+		// 	Farmer buddy,
+		// 	Tool tool,
+		// 	Item item,
+		// 	GameLocation location
+		// )
+		// {
+		// 	foreach (var npc in location.getCharacters())
+		// 	{
+		// 		bool attacked = false;
+		//
+		// 		foreach (IPod pod in this.Pods)
+		// 		{
+		// 			attacked = pod
+		// 				.Interact(
+		// 					buddy,
+		// 					tool,
+		// 					item,
+		// 					location
+		// 				);
+		//
+		// 			if(attacked)
+		// 				break;
+		// 		}
+		//
+		// 		if(attacked)
+		// 			break;
+		// 	}
+		// }
 	}
 }

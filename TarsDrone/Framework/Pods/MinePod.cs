@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Netcode;
 using StardewValley;
 using StardewValley.Objects;
@@ -17,6 +19,11 @@ namespace TarsDrone.Framework.Pods
 		/// <summary>The attachment settings.</summary>
 		private readonly MineConfig Config;
 
+		/****
+		** State
+		****/
+		private StarObject Target;
+
 		/*********
 		** Public methods
 		*********/
@@ -31,6 +38,7 @@ namespace TarsDrone.Framework.Pods
 			: base(modHelper, monitor)
 		{
 			this.Config = config;
+			this.Target = null;
 		}
 
 		/// <summary>Get whether the pod is currently enabled.</summary>
@@ -48,59 +56,55 @@ namespace TarsDrone.Framework.Pods
 			return true;
 		}
 
-		/// <summary>Act on the given tile.</summary>
-		/// <param name="tileObj">The object on the tile.</param>
+		/// <summary>Act on the objects in close proximity.</summary>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="buddyTool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public override bool Act(
-			StarObject tileObj,
 			Farmer buddy,
 			Tool buddyTool,
 			Item item,
 			GameLocation location
 		)
 		{
-			// check if object is in proximity
-			if (!this
-				.IsTileObjWithinBuddyThreshold(
-					buddy,
-					tileObj,
-					location,
-					3
-				)
-			)
-				return false;
-
-			// conjure an iridium pickaxe
-			Tool tool = this.GetIridiumPickaxe();
-
-			// break stones
-			if(this.Config.BreakStones && this.IsStone(tileObj))
-				return this.UseToolOnTile(
-					tool,
-					tileObj.TileLocation,
-					buddy,
-					location
-				);
-
-			// break mine containers, both boxes and barrels
-			if (this.Config.BreakMineContainers && this.IsBreakableMineContainer(tileObj))
+			if (!this.IsWorking)
 			{
-				BreakableContainer container = (BreakableContainer) tileObj;
-				return container.performToolAction(tool, location);
+				foreach (KeyValuePair<Vector2, StarObject> pair in location.objects.Pairs)
+				{
+					this.Target = pair.Value;
+
+					// check if object is in proximity
+					if (!this
+						.IsTileObjWithinBuddyThreshold(
+							buddy,
+							this.Target,
+							location,
+							3
+						)
+					)
+						continue;
+
+					this.IsWorking = true;
+					break;
+				}
+
+				if (this.IsWorking && this.Target != null)
+				{
+					this.Mine(
+						this.Target,
+						buddy,
+						buddyTool,
+						item,
+						location
+					);
+
+					// pod acted in this tick
+					return true;
+				}
 			}
 
-			// clear weeds
-			if(this.Config.ClearWeeds && this.IsWeed(tileObj))
-				return this.UseToolOnTile(
-					tool,
-					tileObj.TileLocation,
-					buddy,
-					location
-				);
-
+			// pod din't act this tick
 			return false;
 		}
 
@@ -111,7 +115,6 @@ namespace TarsDrone.Framework.Pods
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public override bool Interact(
-			NPC npc,
 			Farmer buddy,
 			Tool tool,
 			Item item,
@@ -119,6 +122,50 @@ namespace TarsDrone.Framework.Pods
 		)
 		{
 			return false;
+		}
+
+		private void Mine(
+			StarObject tileObj,
+			Farmer buddy,
+			Tool buddyTool,
+			Item item,
+			GameLocation location
+		)
+		{
+			if (!this.HasWorked)
+			{
+				// conjure an iridium pickaxe
+				Tool tool = this.GetIridiumPickaxe();
+
+				// break stones
+				if(this.Config.BreakStones && this.IsStone(tileObj))
+					this.UseToolOnTile(
+						tool,
+						tileObj.TileLocation,
+						buddy,
+						location
+					);
+
+				// TODO Fix break mine containers, both boxes and barrels
+				//if (this.Config.BreakMineContainers && this.IsBreakableMineContainer(tileObj))
+				//{
+				//	BreakableContainer container = (BreakableContainer) tileObj;
+				//	container.performToolAction(tool, location);
+				//}
+
+				// clear weeds
+				if(this.Config.ClearWeeds && this.IsWeed(tileObj))
+					this.UseToolOnTile(
+						tool,
+						tileObj.TileLocation,
+						buddy,
+						location
+					);
+
+				this.HasWorked = true;
+			}
+
+			this.ResetState();
 		}
 
 		private Tool GetIridiumPickaxe()
@@ -131,6 +178,13 @@ namespace TarsDrone.Framework.Pods
 				.SetValue(new NetInt(4));
 
 			return pickaxe;
+		}
+
+		private void ResetState()
+		{
+			this.IsWorking = false;
+			this.HasWorked = false;
+			this.Target = null;
 		}
 	}
 }

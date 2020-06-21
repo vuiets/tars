@@ -22,14 +22,12 @@ namespace TarsDrone.Framework.Pods.Core
 			GameLocation location
 		);
 
-		/// <summary>Act on the given tile.</summary>
-		/// <param name="tileObj">The object on the tile.</param>
+		/// <summary>Perform an action.</summary>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		bool Act(
-			StarObject tileObj,
 			Farmer buddy,
 			Tool tool,
 			Item item,
@@ -37,13 +35,11 @@ namespace TarsDrone.Framework.Pods.Core
 		);
 
 		/// <summary>Interact with a NPC.</summary>
-		/// <param name="npc">The npc in the vicinity.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		bool Interact(
-			NPC npc,
 			Farmer buddy,
 			Tool tool,
 			Item item,

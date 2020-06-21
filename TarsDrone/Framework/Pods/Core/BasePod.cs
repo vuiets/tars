@@ -23,8 +23,20 @@ namespace TarsDrone.Framework.Pods.Core
 		/****
 		* Constants
 		****/
+		/// <summary>Name of Stone object.</summary>
 		private readonly string STONE = "Stone";
+
+		/// <summary>Name of Weed object.</summary>
 		private readonly string WEEDS = "Weeds";
+
+		/****
+		** State
+		****/
+		/// <summary>Whether the pod is still acting.</summary>
+		protected bool IsWorking;
+
+		/// <summary>Whether the pod has finished acting this tick.</summary>
+		protected bool HasWorked;
 
 		/*********
  		** Public methods
@@ -41,14 +53,12 @@ namespace TarsDrone.Framework.Pods.Core
 			GameLocation location
 		);
 
-		/// <summary>Apply the tool to the given tile.</summary>
-		/// <param name="tileObj">The object on the tile.</param>
+		/// <summary>Perform an action.</summary>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public abstract bool Act(
-			StarObject tileObj,
 			Farmer buddy,
 			Tool tool,
 			Item item,
@@ -56,13 +66,11 @@ namespace TarsDrone.Framework.Pods.Core
 		);
 
 		/// <summary>Interact with a NPC.</summary>
-		/// <param name="npc">The npc in the vicinity.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public abstract bool Interact(
-			NPC npc,
 			Farmer buddy,
 			Tool tool,
 			Item item,

@@ -23,6 +23,11 @@ namespace TarsDrone.Framework.Pods
 		private int Damage;
 
 		/****
+		** State
+		****/
+		private Monster Target;
+
+		/****
 		** Constants
 		****/
 		private readonly int MAX_DAMAGE = -1;
@@ -68,7 +73,6 @@ namespace TarsDrone.Framework.Pods
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public override bool Act(
-			StarObject tileObj,
 			Farmer buddy,
 			Tool buddyTool,
 			Item item,
@@ -85,35 +89,76 @@ namespace TarsDrone.Framework.Pods
 		/// <param name="item">The item selected by the player (if any).</param>
 		/// <param name="location">The current location.</param>
 		public override bool Interact(
-			NPC npc,
 			Farmer buddy,
 			Tool tool,
 			Item item,
 			GameLocation location
 		)
 		{
-			if (!this.IsMonster(npc) || !npc.withinPlayerThreshold(3))
-				return false;
+			if (!this.IsWorking)
+			{
+				foreach (var npc in location.getCharacters())
+				{
+					if (!this.IsMonster(npc) || !npc.withinPlayerThreshold(3))
+						continue;
 
-			Monster monster = (Monster) npc;
+					this.IsWorking = true;
+					this.Target = (Monster) npc;
+					break;
+				}
 
-			// set the damage
-			this.SetDamage(monster);
+				if (this.IsWorking && this.Target != null)
+				{
+					this.Shoot(
+						this.Target,
+						buddy,
+						tool,
+						item,
+						location
+					);
 
-			// define collision behaviour
-			var collisionEffects = this.DefineCollisionBehaviour(monster);
+					// pod acted in this tick
+					return true;
+				}
 
-			// figure out the cannon velocity
-			Vector2 velocity = GetVelocityToward(monster);
+			}
 
-			// ready the cannon
-			BasicProjectile cannon = this.PrepareCannon(location, velocity, collisionEffects);
+			// pod din't interact this tick
+			return false;
+		}
 
-			// hurl the cannon
-			return this.Beam(
-				cannon,
-				location
-			);
+		private void Shoot(
+			Monster monster,
+			Farmer buddy,
+			Tool tool,
+			Item item,
+			GameLocation location
+		)
+		{
+			if (!this.HasWorked)
+			{
+				// set the damage
+				this.SetDamage(monster);
+
+				// define collision behaviour
+				var collisionEffects = this.DefineCollisionBehaviour(monster);
+
+				// figure out the cannon velocity
+				Vector2 velocity = GetVelocityToward(monster);
+
+				// ready the cannon
+				BasicProjectile cannon = this.PrepareCannon(location, velocity, collisionEffects);
+
+				// hurl the cannon and pod
+				this.Beam(
+					cannon,
+					location
+				);
+
+				this.HasWorked = true;
+			}
+
+			this.ResetState();
 		}
 
 		private void SetDamage(Monster npc)
@@ -221,6 +266,13 @@ namespace TarsDrone.Framework.Pods
 			{
 				IgnoreLocationCollision = (Game1.currentLocation.currentEvent != null)
 			};
+		}
+
+		private void ResetState()
+		{
+			this.IsWorking = false;
+			this.HasWorked = false;
+			this.Target = null;
 		}
 	}
 }
