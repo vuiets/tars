@@ -1,5 +1,5 @@
 # TARS
-**TARS** is a [Stardew Valley](https://www.stardewvalley.net/) that activates a friendly drone. It helps you while you mine in the treacherous caves of the Valley - protecting you from monsters and zapping stones that it hovers over. 
+**TARS** is a [Stardew Valley](https://www.stardewvalley.net/) mod that activates a friendly drone. It helps you while you mine in the treacherous caves of the Valley - protecting you from monsters and zapping stones that it hovers over. 
 
 TARs is fun weekend project. It was inspired by and is a open source fork of [@camcamcamcam/murderdrone](https://github.com/camcamcamcam/murderdrone).
 
@@ -26,7 +26,7 @@ The mod creates a `config.json` file in its mod folder the first time you run it
   <td><code>Active</code></td>
   <td><code>true</code></td>  
   <td>
-    State on game launch. You can press `F8` to toggle the state once the game starts.</br>
+    State on game launch. You can press <code>F8</code> to toggle the state once the game starts.</br>
   </td>
 </tr>
 <tr>
@@ -40,7 +40,7 @@ The mod creates a `config.json` file in its mod folder the first time you run it
   <td><code>Damage</code></td>
   <td><code>-1</code></td>  
   <td>
-    Damage done on monsters by your drone. <code>-1</code> results in a one-hit KO.</br>
+    Damage inflicted on monsters by your drone. <code>-1</code> results in a one-hit KO.</br>
   </td>
 </tr>
 </table>
