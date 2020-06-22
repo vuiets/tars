@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Netcode;
@@ -68,6 +69,46 @@ namespace TarsDrone.Framework.Pods
 			GameLocation location
 		)
 		{
+			try
+			{
+				return this.Scan(
+					buddy,
+					buddyTool,
+					item,
+					location
+				);
+			}
+			catch (Exception actException)
+			{
+				this.Monitor.Log(actException.StackTrace, LogLevel.Error);
+				this.ResetState();
+				return false;
+			}
+		}
+
+		/// <summary>Interact with a NPC.</summary>
+		/// <param name="npc">The npc in the vicinity.</param>
+		/// <param name="buddy">The current player who owns this drone.</param>
+		/// <param name="tool">The tool selected by the player (if any).</param>
+		/// <param name="item">The item selected by the player (if any).</param>
+		/// <param name="location">The current location.</param>
+		public override bool Interact(
+			Farmer buddy,
+			Tool tool,
+			Item item,
+			GameLocation location
+		)
+		{
+			return false;
+		}
+
+		private bool Scan(
+			Farmer buddy,
+			Tool buddyTool,
+			Item item,
+			GameLocation location
+		)
+		{
 			if (!this.IsWorking)
 			{
 				foreach (KeyValuePair<Vector2, StarObject> pair in location.objects.Pairs)
@@ -108,22 +149,6 @@ namespace TarsDrone.Framework.Pods
 			return false;
 		}
 
-		/// <summary>Interact with a NPC.</summary>
-		/// <param name="npc">The npc in the vicinity.</param>
-		/// <param name="buddy">The current player who owns this drone.</param>
-		/// <param name="tool">The tool selected by the player (if any).</param>
-		/// <param name="item">The item selected by the player (if any).</param>
-		/// <param name="location">The current location.</param>
-		public override bool Interact(
-			Farmer buddy,
-			Tool tool,
-			Item item,
-			GameLocation location
-		)
-		{
-			return false;
-		}
-
 		private void Mine(
 			StarObject tileObj,
 			Farmer buddy,
@@ -149,8 +174,9 @@ namespace TarsDrone.Framework.Pods
 				// TODO Fix break mine containers, both boxes and barrels
 				//if (this.Config.BreakMineContainers && this.IsBreakableMineContainer(tileObj))
 				//{
+				//	Tool club = this.GetClubWeapon();
 				//	BreakableContainer container = (BreakableContainer) tileObj;
-				//	container.performToolAction(tool, location);
+				//	tileObj.performToolAction(club, location);
 				//}
 
 				// clear weeds
@@ -178,6 +204,13 @@ namespace TarsDrone.Framework.Pods
 				.SetValue(new NetInt(4));
 
 			return pickaxe;
+		}
+
+		private Tool GetClubWeapon()
+		{
+			Tool club = new MeleeWeapon(MeleeWeapon.defenseSword);
+
+			return club;
 		}
 
 		private void ResetState()
