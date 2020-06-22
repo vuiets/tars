@@ -8,13 +8,14 @@ using StardewValley.Projectiles;
 using StarObject = StardewValley.Object;
 
 namespace TarsDrone.Framework.Pods.Core
-{	/// <summary>Base class for pod implementations</summary>
+{
+	/// <summary>Base class for pod implementations.</summary>
 	internal abstract class BasePod: IPod
 	{
 		/*********
 		** Fields
 		*********/
-		/// <summary>Provides handy modding utilities.</summary>
+		/// <summary>Provides modding utilities.</summary>
 		protected IModHelper Helper { get; }
 
 		/// <summary>Helps with logging.</summary>
@@ -77,11 +78,19 @@ namespace TarsDrone.Framework.Pods.Core
 			GameLocation location
 		);
 
+		/// <summary>Check whether a NPC is in the vicinity of drone's buddy.</summary>
+		/// <param name="npc">The non-player character in vicinity.</param>
+		/// <param name="threshold">The number of tiles in proximity.</param>
 		public virtual bool IsNpcWithinBuddyThreshold(NPC npc, int threshold)
 		{
 			return npc.withinPlayerThreshold(threshold);
 		}
 
+		/// <summary>Check whether a tile is in the vicinity of drone's buddy.</summary>
+		/// <param name="buddy">The current player who owns this drone.</param>
+		/// <param name="tileObj">The object on the tile.</param>
+		/// <param name="location">The current location.</param>
+		/// <param name="threshold">The number of tiles in proximity.</param>
 		public bool IsTileObjWithinBuddyThreshold(
 			Farmer buddy,
 			StarObject tileObj,
@@ -99,8 +108,8 @@ namespace TarsDrone.Framework.Pods.Core
 			       && (double) Math.Abs(tileLocation2.Y - tileLocation1.Y) <= (double) threshold;
 		}
 
-		/// <summary>Method called when the tractor attachments have been activated for a location.</summary>
-		/// <param name="location">The current tractor location.</param>
+		/// <summary>Method called when the pods have been activated for a location.</summary>
+		/// <param name="location">The current location.</param>
 		public virtual void OnActivated(GameLocation location)
 		{
 			// do nothing

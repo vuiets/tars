@@ -12,6 +12,7 @@ using CollisionBehavior = StardewValley.Projectiles.BasicProjectile.onCollisionB
 
 namespace TarsDrone.Framework.Pods
 {
+	/// <summary>Pod to protect the drone's buddy.</summary>
 	internal class BattlePod: BasePod
 	{
 		/*********
@@ -20,18 +21,20 @@ namespace TarsDrone.Framework.Pods
 		/// <summary>The attachment settings.</summary>
 		private readonly BattleConfig Config;
 
+		/// <summary>Damage to inflict on the target.</summary>
 		private int Damage;
 
-		/****
-		** State
-		****/
+		/// <summary>The target of the attack.</summary>
 		private Monster Target;
 
 		/****
 		** Constants
 		****/
+		/// <summary>Maximum damage that can be inflicted.</summary>
 		private readonly int MAX_DAMAGE = -1;
+		/// <summary>Sound on collision.</summary>
 		private const string COLLISION_SOUND = "hitEnemy";
+		/// <summary>Sound on firing.</summary>
 		private const string FIRING_SOUND = "daggerswipe";
 
 		/*********
@@ -67,7 +70,6 @@ namespace TarsDrone.Framework.Pods
 		}
 
 		/// <summary>Act on the given tile.</summary>
-		/// <param name="tileObj">The object on the tile.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="buddyTool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
@@ -83,7 +85,6 @@ namespace TarsDrone.Framework.Pods
 		}
 
 		/// <summary>Interact with a NPC.</summary>
-		/// <param name="npc">The npc in the vicinity.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
@@ -97,11 +98,15 @@ namespace TarsDrone.Framework.Pods
 		{
 			if (!this.IsWorking)
 			{
+				// get all NPCs in the location
 				foreach (var npc in location.getCharacters())
 				{
+					// check whether NPC is a monster
+					// also, if monster is in the vicinity of buddy
 					if (!this.IsMonster(npc) || !npc.withinPlayerThreshold(3))
 						continue;
 
+					// if yes, get to work
 					this.IsWorking = true;
 					this.Target = (Monster) npc;
 					break;
@@ -109,29 +114,30 @@ namespace TarsDrone.Framework.Pods
 
 				if (this.IsWorking && this.Target != null)
 				{
+					// protect the buddy
 					this.Shoot(
 						this.Target,
-						buddy,
-						tool,
-						item,
 						location
 					);
 
-					// pod acted in this tick
+					// say pod acted in this tick
 					return true;
 				}
 
 			}
 
-			// pod din't interact this tick
+			// say pod din't interact this tick
 			return false;
 		}
 
+		/*********
+		** Private methods
+		*********/
+		/// <summary>Shoot the monster.</summary>
+		/// <param name="monster">The monster targeted by the pod.</param>
+		/// <param name="location">The current location.</param>
 		private void Shoot(
 			Monster monster,
-			Farmer buddy,
-			Tool tool,
-			Item item,
 			GameLocation location
 		)
 		{
@@ -158,15 +164,20 @@ namespace TarsDrone.Framework.Pods
 				this.HasWorked = true;
 			}
 
+			// reset state variables
 			this.ResetState();
 		}
 
-		private void SetDamage(Monster npc)
+		/// <summary>Decide the damage to do on the monster.</summary>
+		/// <param name="monster">The monster targeted by the pod.</param>
+		private void SetDamage(Monster monster)
 		{
 			if (this.Damage == MAX_DAMAGE)
-				this.Damage = npc.Health;
+				this.Damage = monster.Health;
 		}
 
+		/// <summary>Define the behaviour on collision with monster.</summary>
+		/// <param name="monster">The monster targeted by the pod.</param>
 		private CollisionBehavior DefineCollisionBehaviour(Monster monster)
 		{
 			return new CollisionBehavior(
@@ -190,7 +201,7 @@ namespace TarsDrone.Framework.Pods
 							.GetField<NetBool>(bug, "isArmoredBug")
 							.SetValue(new NetBool(false));
 
-					// reduce rockcrabs to mortal beings
+					// reduce rock crabs to mortal beings
 					if (monster is RockCrab rockCrab)
 					{
 						if (Game1.player.CurrentTool != null
@@ -207,7 +218,7 @@ namespace TarsDrone.Framework.Pods
 							.SetValue(new NetInt(0));
 					}
 
-					// hurt monster
+					// inflict damage on monster
 					loc.damageMonster(
 						monster.GetBoundingBox(),
 						this.Damage,
@@ -223,6 +234,8 @@ namespace TarsDrone.Framework.Pods
 			);
 		}
 
+		/// <summary>Calculate the projectile velocity.</summary>
+		/// <param name="monster">The monster targeted by the pod.</param>
 		private Vector2 GetVelocityToward(Monster monster)
 		{
 			// TODO Access owner drone properties in pod
@@ -236,6 +249,10 @@ namespace TarsDrone.Framework.Pods
 			);
 		}
 
+		/// <summary>Ready the projectiles.</summary>
+		/// <param name="location">The current location.</param>
+		/// <param name="velocity">The projectile velocity.</param>
+		/// <param name="collisionBehavior">The behaviour on collision.</param>
 		private BasicProjectile PrepareCannon(
 			GameLocation location,
 			Vector2 velocity,
@@ -243,7 +260,8 @@ namespace TarsDrone.Framework.Pods
 		)
 		{
 			// TODO Once again access owner drone properties in pod
-			Drone ownerDrone = (Drone)Game1.getCharacterFromName("Drone");
+			Drone ownerDrone = (Drone)Game1
+				.getCharacterFromName("Drone");
 
 			return new BasicProjectile(
 				this.Damage,
@@ -268,6 +286,7 @@ namespace TarsDrone.Framework.Pods
 			};
 		}
 
+		/// <summary>Reset all state variables.</summary>
 		private void ResetState()
 		{
 			this.IsWorking = false;

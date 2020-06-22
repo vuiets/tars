@@ -20,7 +20,7 @@ namespace TarsDrone
 		/****
 	    ** Configuration
 	    ****/
-		/// <summary>The mod configuration.</summary>
+		/// <summary>The mod configurations.</summary>
 		private ModConfig Config;
 
 		/****

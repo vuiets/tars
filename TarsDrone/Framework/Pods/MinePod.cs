@@ -12,6 +12,7 @@ using StarObject = StardewValley.Object;
 
 namespace TarsDrone.Framework.Pods
 {
+	/// <summary>Pod to mine objects for items.</summary>
 	internal class MinePod: BasePod
 	{
 		/*********
@@ -20,9 +21,7 @@ namespace TarsDrone.Framework.Pods
 		/// <summary>The attachment settings.</summary>
 		private readonly MineConfig Config;
 
-		/****
-		** State
-		****/
+		/// <summary>The mine target object.</summary>
 		private StarObject Target;
 
 		/*********
@@ -71,6 +70,7 @@ namespace TarsDrone.Framework.Pods
 		{
 			try
 			{
+				// scan the surrounding area and mine
 				return this.Scan(
 					buddy,
 					buddyTool,
@@ -80,14 +80,15 @@ namespace TarsDrone.Framework.Pods
 			}
 			catch (Exception actException)
 			{
+				// log scan failure
 				this.Monitor.Log(actException.StackTrace, LogLevel.Error);
+				// reset state variables
 				this.ResetState();
 				return false;
 			}
 		}
 
 		/// <summary>Interact with a NPC.</summary>
-		/// <param name="npc">The npc in the vicinity.</param>
 		/// <param name="buddy">The current player who owns this drone.</param>
 		/// <param name="tool">The tool selected by the player (if any).</param>
 		/// <param name="item">The item selected by the player (if any).</param>
@@ -102,6 +103,14 @@ namespace TarsDrone.Framework.Pods
 			return false;
 		}
 
+		/*********
+		** Private Methods
+		*********/
+		/// <summary>Scan the surrounding area and mine.</summary>
+		/// <param name="buddy">The current player who owns this drone.</param>
+		/// <param name="buddyTool">The tool selected by the player (if any).</param>
+		/// <param name="item">The item selected by the player (if any).</param>
+		/// <param name="location">The current location.</param>
 		private bool Scan(
 			Farmer buddy,
 			Tool buddyTool,
@@ -111,11 +120,12 @@ namespace TarsDrone.Framework.Pods
 		{
 			if (!this.IsWorking)
 			{
+				// get all objects in the location
 				foreach (KeyValuePair<Vector2, StarObject> pair in location.objects.Pairs)
 				{
 					this.Target = pair.Value;
 
-					// check if object is in proximity
+					// check if object is in the vicinity of buddy
 					if (!this
 						.IsTileObjWithinBuddyThreshold(
 							buddy,
@@ -132,6 +142,7 @@ namespace TarsDrone.Framework.Pods
 
 				if (this.IsWorking && this.Target != null)
 				{
+					// mine for items
 					this.Mine(
 						this.Target,
 						buddy,
@@ -140,15 +151,21 @@ namespace TarsDrone.Framework.Pods
 						location
 					);
 
-					// pod acted in this tick
+					// say pod acted in this tick
 					return true;
 				}
 			}
 
-			// pod din't act this tick
+			// say pod din't act this tick
 			return false;
 		}
 
+		/// <summary>Mine for items.</summary>
+		/// <param name="tileObj">The target object on the tile.</param>
+		/// <param name="buddy">The current player who owns this drone.</param>
+		/// <param name="buddyTool">The tool selected by the player (if any).</param>
+		/// <param name="item">The item selected by the player (if any).</param>
+		/// <param name="location">The current location.</param>
 		private void Mine(
 			StarObject tileObj,
 			Farmer buddy,
@@ -174,7 +191,7 @@ namespace TarsDrone.Framework.Pods
 				// TODO Fix break mine containers, both boxes and barrels
 				//if (this.Config.BreakMineContainers && this.IsBreakableMineContainer(tileObj))
 				//{
-				//	Tool club = this.GetClubWeapon();
+				//	Tool club = this.GetSword();
 				//	BreakableContainer container = (BreakableContainer) tileObj;
 				//	tileObj.performToolAction(club, location);
 				//}
@@ -194,6 +211,7 @@ namespace TarsDrone.Framework.Pods
 			this.ResetState();
 		}
 
+		/// <summary>Conjure an iridium pickaxe</summary>
 		private Tool GetIridiumPickaxe()
 		{
 			Tool pickaxe = new Pickaxe();
@@ -206,13 +224,15 @@ namespace TarsDrone.Framework.Pods
 			return pickaxe;
 		}
 
-		private Tool GetClubWeapon()
+		/// <summary>Conjure a sword</summary>
+		private Tool GetSword()
 		{
-			Tool club = new MeleeWeapon(MeleeWeapon.defenseSword);
+			Tool sword = new MeleeWeapon(MeleeWeapon.defenseSword);
 
-			return club;
+			return sword;
 		}
 
+		/// <summary>Reset all state variables.</summary>
 		private void ResetState()
 		{
 			this.IsWorking = false;
