@@ -17,18 +17,22 @@ namespace TarsDrone
 		/// <summary>Provides modding utilities.</summary>
 		private IModHelper ModHelper;
 
-		/****
-	    ** Configuration
-	    ****/
 		/// <summary>The mod configurations.</summary>
 		private ModConfig Config;
 
 		/****
 		** Constants
 		****/
+		/// <summary>Reference label of the drone's sprite.</summary>
 		private readonly string SPRITE_NAME = "Sidekick/Drone";
+
+		/// <summary>Sprite pixel width.</summary>
 		private readonly int SPRITE_PIXEL_WIDTH = 12;
+
+		/// <summary>Sprite pixel height.</summary>
 		private readonly int SPRITE_PIXEL_HEIGHT = 12;
+
+		/// <summary>Name of the drone.</summary>
 		private readonly string DRONE_NAME = "Drone";
 
 		/*********
@@ -123,6 +127,7 @@ namespace TarsDrone
 			return this.ModHelper.ReadConfig<ModConfig>();
 		}
 
+		/// <summary>Activate drone and its pods.</summary>
 		private void ActivateDrone()
 		{
 			this.AddDrone();
@@ -131,6 +136,7 @@ namespace TarsDrone
 			Game1.addHUDMessage(new HUDMessage("Drone activated.", 4));
 		}
 
+		/// <summary>Deactivate drone and its pods.</summary>
 		private void DeactivateDrone()
 		{
 			this.RemoveDrone();
@@ -139,6 +145,7 @@ namespace TarsDrone
 			Game1.showRedMessage("Drone deactivated");
 		}
 
+		/// <summary>Add drone to the world.</summary>
 		private void AddDrone()
 		{
 			if (Game1.currentLocation is DecoratableLocation)
@@ -155,20 +162,24 @@ namespace TarsDrone
 				);
 		}
 
+		/// <summary>Remove drone from the world.</summary>
 		private void RemoveDrone()
 		{
-			if (Game1.getCharacterFromName("Drone") is NPC drone)
+			if (Game1.getCharacterFromName(this.DRONE_NAME) is NPC drone)
 				Game1.removeThisCharacterFromAllLocations(drone);
 		}
 
+		/// <summary>Create a drone instance, along with it's sprite.</summary>
 		private Drone CreateDrone()
 		{
+			// create drone's sprite
 			AnimatedSprite droneSprite = new AnimatedSprite(
 				this.SPRITE_NAME,
 				1,
 				this.SPRITE_PIXEL_WIDTH,
 				this.SPRITE_PIXEL_HEIGHT
 			);
+			// options to instantiate drone
 			NPCOptions droneOptions = new NPCOptions(
 				droneSprite,
 				Game1.player.Position,
@@ -176,7 +187,8 @@ namespace TarsDrone
 				this.DRONE_NAME
 			);
 
-			return  new Drone(
+			// instantiate drone
+			return new Drone(
 				this.Config,
 				this.Helper,
 				this.Monitor,
