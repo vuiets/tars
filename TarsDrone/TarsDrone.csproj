@@ -30,13 +30,22 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\Config\BattleConfig.cs" />
+    <Compile Include="Framework\Config\BuiltInPodConfig.cs" />
+    <Compile Include="Framework\Config\MineConfig.cs" />
+    <Compile Include="Framework\Core\BaseDrone.cs" />
+    <Compile Include="Framework\Core\IDrone.cs" />
+    <Compile Include="Framework\Drone.cs" />
+    <Compile Include="Framework\Pods\BattlePod.cs" />
+    <Compile Include="Framework\Pods\Core\BasePod.cs" />
+    <Compile Include="Framework\Pods\Core\IPod.cs" />
+    <Compile Include="Framework\Pods\MinePod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="ModConfig.cs" />
-    <Compile Include="Drone.cs" />
+    <Compile Include="OldDrone.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="manifest.json" />
     <None Include=".editorconfig" />
     <None Include="Assets\cute_robot_sprite.png">
@@ -45,7 +54,14 @@
     <None Include="Assets\drone_sprite_robot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets'))" />
+  </Target>
 </Project>

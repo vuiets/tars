@@ -14,7 +14,7 @@ using CollisionBehavior = StardewValley.Projectiles.BasicProjectile.onCollisionB
 
 namespace TarsDrone
 {
-	public class Drone : NPC
+	public class OldDrone : NPC
 	{
 		/*********
 		** Fields
@@ -50,11 +50,11 @@ namespace TarsDrone
 		private bool Destroying;
 		private bool Destroyed;
 
-		public Drone()
+		public OldDrone()
 		{
 		}
 
-		public Drone(
+		public OldDrone(
 			int speed,
 			int damage,
 			float projectileVelocity,
